@@ -10,6 +10,7 @@ import json
 
 from assemblyai_client import AssemblyAIClient
 from translation_service import TranslationService
+from displayOLED import display_text_on_oled
 
 class SimpleSubtitleSystem:
     def __init__(self):
@@ -43,8 +44,10 @@ class SimpleSubtitleSystem:
         print(f"\n[{timestamp}] {status}")
         print(f"Original: {text}")
         
-        # For final transcripts, get translation
-        if not is_partial:
+        # Display partials immediately on OLED
+        if is_partial:
+            display_text_on_oled(text)
+        else:
             try:
                 language, english_translation = self.translation_service.detect_and_translate(text)
                 print(f"Language: {language}")
@@ -53,6 +56,8 @@ class SimpleSubtitleSystem:
                 else:
                     print(f"English: {english_translation} (no translation needed)")
                 print("-" * 60)
+                # Display translation on OLED
+                display_text_on_oled(english_translation)
             except Exception as e:
                 print(f"Translation error: {e}")
                 print("-" * 60)
